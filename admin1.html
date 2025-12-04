@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Management</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    h1 { text-align: center; }
+    button, select, input {
+      padding: 7px; margin: 5px; border-radius: 5px;
+    }
+    .container { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+    #bookForm { border: 1px solid #ccc; padding: 15px 25px; border-radius: 8px; }
+    #booksContainer {
+      margin-top: 30px; display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      padding: 10px;
+    }
+    .card {
+      background: #fff; border-radius: 10px; padding: 10px;
+      text-align: center; box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    img { width: 150px; height: 190px; object-fit: cover; }
+    .deleteBtn {
+      background: red; color: white; border: none;
+      padding: 6px 12px; cursor: pointer; border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Book Management Page</h1>
+  <button onclick="window.location.href='index22.html'">Back to Home</button>
+
+  <div class="container">
+    <form id="bookForm">
+      <h3>Add Book</h3>
+      <input type="text" id="title" placeholder="Enter Title" required><br>
+      <input type="text" id="author" placeholder="Enter Author" required><br>
+      <select id="category">
+        <option>Fiction</option>
+        <option>Comedy</option>
+        <option>Technical</option>
+      </select><br>
+      <button type="submit">Add Book</button>
+    </form>
+
+    <div>
+      <button id="sortBtn">Sort A → Z</button><br>
+      <select id="filter">
+        <option>All</option>
+        <option>Fiction</option>
+        <option>Comedy</option>
+        <option>Technical</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="booksContainer"></div>
+
+  <script>
+    const imageUrl = https://m.media-amazon.com/images/I/71ZB18P3inL._SY522_.jpg
+;
+    let books = [];
+    let sortAsc = true;
+
+    const form = document.getElementById("bookForm");
+    const container = document.getElementById("booksContainer");
+    const filterDropdown = document.getElementById("filter");
+    const sortBtn = document.getElementById("sortBtn");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const title = document.getElementById("title").value;
+      const author = document.getElementById("author").value;
+      const category = document.getElementById("category").value;
+
+      books.push({ title, author, category, imageUrl });
+      form.reset();
+      renderBooks(books);
+    });
+
+    sortBtn.addEventListener("click", () => {
+      books.sort((a, b) =>
+        sortAsc ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title)
+      );
+      sortAsc = !sortAsc;
+      sortBtn.innerText = sortAsc ? "Sort A → Z" : "Sort Z → A";
+      renderBooks(books);
+    });
+
+    filterDropdown.addEventListener("change", () => {
+      const selected = filterDropdown.value;
+      const filtered = selected === "All" ? books : books.filter(b => b.category === selected);
+      renderBooks(filtered);
+    });
+
+    function renderBooks(list) {
+      container.innerHTML = "";
+      list.forEach((book, index) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${book.imageUrl}">
+          <h3>${book.title}</h3>
+          <p>Author: ${book.author}</p>
+          <p>Category: ${book.category}</p>
+          <button class="deleteBtn" onclick="deleteBook(${index})">Delete</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.deleteBook = (index) => {
+      books.splice(index, 1);
+      renderBooks(books);
+    };
+  </script>
+
+</body>
+</html>
